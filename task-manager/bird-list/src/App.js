@@ -2,45 +2,52 @@
 //we need to do this
 // https://storage.googleapis.com/accio-digital-ocean-data/media/frontend4_mock/frontend4_mock_birdlist.gif
 import React, { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { addPost, likePost } from './store';
 
-function App() {
-  const [inputValue, setInputValue] = useState('');
-  const posts = useSelector(state => state.posts);
-  const dispatch = useDispatch();
+function BirdList() {
+  const [birds, setBirds] = useState([]);
+  const [newBird, setNewBird] = useState('');
 
-  const handleInputChange = e => {
-    setInputValue(e.target.value);
+  const handleInputChange = (event) => {
+    setNewBird(event.target.value);
   };
 
-  const handleAddPost = () => {
-    const newPost = { id: Date.now(), text: inputValue, likes: 0 };
-    dispatch(addPost(newPost));
-    setInputValue('');
+  const handleAddBird = () => {
+    if (newBird.trim() !== '') {
+      setBirds([...birds, { name: newBird, likes: 0 }]);
+      setNewBird('');
+    }
   };
 
-  const handleLikePost = postId => {
-    dispatch(likePost(postId));
+  const handleLike = (index) => {
+    const updatedBirds = [...birds];
+    updatedBirds[index].likes += 1;
+    setBirds(updatedBirds);
   };
 
   return (
     <div>
-      <h1>Birds' Posts</h1>
-      <input type="text" value={inputValue} onChange={handleInputChange} />
-      <button onClick={handleAddPost}>Add Post</button>
-      <ul>
-        {posts.map(post => (
-          <li key={post.id}>
-            {post.text}
-            <button onClick={() => handleLikePost(post.id)}>Like</button>
-            <span>Likes: {post.likes}</span>
-          </li>
-        ))}
-      </ul>
+      <h1>Bird List</h1>
+      <div>
+        <input
+          type="text"
+          value={newBird}
+          onChange={handleInputChange}
+          placeholder="Enter bird name"
+        /><br/>
+        <button onClick={handleAddBird}>Add</button>
+      </div>
+      <div>
+        <ul>
+          {birds.map((bird, index) => (
+            <li key={index}>
+              {bird.name} <br/>likes: {bird.likes} 
+              <button onClick={() => handleLike(index)}>+</button>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }
 
-export default App;
-
+export default BirdList;
